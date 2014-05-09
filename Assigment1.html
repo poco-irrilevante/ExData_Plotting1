@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>Peer assignment 1; Exploratory Data Analysis</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: rgb(88, 72, 246)
+   }
+
+   pre .number {
+     color: rgb(0, 0, 205);
+   }
+
+   pre .comment {
+     color: rgb(76, 136, 107);
+   }
+
+   pre .keyword {
+     color: rgb(0, 0, 255);
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: rgb(3, 106, 7);
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+</head>
+
+<body>
+<h1>Peer assignment 1; Exploratory Data Analysis</h1>
+
+<hr/>
+
+<h2>Abstract</h2>
+
+<p>This script file will read the csv file and tidy it, and saves the subset based on the provided period.</p>
+
+<h2>Data description</h2>
+
+<ul>
+<li>Dataset: Electric power consumption [20Mb]</li>
+<li>Description: Measurements of electric power consumption in one household with a one-minute sampling rate over a period of almost 4 years. Different electrical quantities and some sub-metering values are available.</li>
+</ul>
+
+<p>The following descriptions of the 9 variables in the dataset are taken from the UCI web site:</p>
+
+<ol>
+<li>Date: Date in format dd/mm/yyyy </li>
+<li>Time: time in format hh:mm:ss </li>
+<li>Global_active_power: household global minute-averaged active power (in kilowatt) </li>
+<li>Global_reactive_power: household global minute-averaged reactive power (in kilowatt) </li>
+<li>Voltage: minute-averaged voltage (in volt) </li>
+<li>Global_intensity: household global minute-averaged current intensity (in ampere) </li>
+<li>Sub_metering_1: energy sub-metering No. 1 (in watt-hour of active energy). It corresponds to the kitchen, containing mainly a dishwasher, an oven and a microwave (hot plates are not electric but gas powered). </li>
+<li>Sub_metering_2: energy sub-metering No. 2 (in watt-hour of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator and a light. </li>
+<li>Sub_metering_3: energy sub-metering No. 3 (in watt-hour of active energy). It corresponds to an electric water-heater and an air-conditioner.</li>
+</ol>
+
+<h2>Loading required libraries</h2>
+
+<p>I decided to use the <code>data.table</code> library to read the file. The knitr library is used for creating markdown documents. </p>
+
+<pre><code class="r">
+## install.packages(&#39;data.table&#39;) ## optional for read.table
+## install.packages(&#39;knitr&#39;) ## optional for markdown
+library(data.table)  ## for read.table
+library(knitr)  ## for markdown
+</code></pre>
+
+<h2>Read the text file</h2>
+
+<p>I have set the data directory differently than the script folder, to prevent the data being synced with the github data we put the folder in a different location</p>
+
+<p>As mentioned in the supporting documentation the dataset has 2,075,259 rows of 9 columns. </p>
+
+<pre><code class="r">
+dat &lt;- read.table(file = &quot;~/Courses/R-ExploratoryDataAnalysis/Data/power_consumption/household_power_consumption.txt&quot;, 
+    header = TRUE, sep = &quot;;&quot;, na.strings = &quot;?&quot;, stringsAsFactors = FALSE)
+str(dat)
+</code></pre>
+
+<pre><code>## &#39;data.frame&#39;:    2075259 obs. of  9 variables:
+##  $ Date                 : chr  &quot;16/12/2006&quot; &quot;16/12/2006&quot; &quot;16/12/2006&quot; &quot;16/12/2006&quot; ...
+##  $ Time                 : chr  &quot;17:24:00&quot; &quot;17:25:00&quot; &quot;17:26:00&quot; &quot;17:27:00&quot; ...
+##  $ Global_active_power  : num  4.22 5.36 5.37 5.39 3.67 ...
+##  $ Global_reactive_power: num  0.418 0.436 0.498 0.502 0.528 0.522 0.52 0.52 0.51 0.51 ...
+##  $ Voltage              : num  235 234 233 234 236 ...
+##  $ Global_intensity     : num  18.4 23 23 23 15.8 15 15.8 15.8 15.8 15.8 ...
+##  $ Sub_metering_1       : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Sub_metering_2       : num  1 1 2 1 1 2 1 1 1 2 ...
+##  $ Sub_metering_3       : num  17 16 17 17 17 17 17 17 17 16 ...
+</code></pre>
+
+<p>The next step is to combine the date and time columns to a single datetime columns and remove the old columns</p>
+
+<pre><code class="r">
+dat$TimeStamp &lt;- strptime(paste(dat$Date, dat$Time, sep = &quot; &quot;), &quot;%d/%m/%Y %H:%M:%S&quot;)
+## Check the structure
+str(dat)
+</code></pre>
+
+<pre><code>## &#39;data.frame&#39;:    2075259 obs. of  10 variables:
+##  $ Date                 : chr  &quot;16/12/2006&quot; &quot;16/12/2006&quot; &quot;16/12/2006&quot; &quot;16/12/2006&quot; ...
+##  $ Time                 : chr  &quot;17:24:00&quot; &quot;17:25:00&quot; &quot;17:26:00&quot; &quot;17:27:00&quot; ...
+##  $ Global_active_power  : num  4.22 5.36 5.37 5.39 3.67 ...
+##  $ Global_reactive_power: num  0.418 0.436 0.498 0.502 0.528 0.522 0.52 0.52 0.51 0.51 ...
+##  $ Voltage              : num  235 234 233 234 236 ...
+##  $ Global_intensity     : num  18.4 23 23 23 15.8 15 15.8 15.8 15.8 15.8 ...
+##  $ Sub_metering_1       : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Sub_metering_2       : num  1 1 2 1 1 2 1 1 1 2 ...
+##  $ Sub_metering_3       : num  17 16 17 17 17 17 17 17 17 16 ...
+##  $ TimeStamp            : POSIXlt, format: &quot;2006-12-16 17:24:00&quot; &quot;2006-12-16 17:25:00&quot; ...
+</code></pre>
+
+<pre><code class="r">
+</code></pre>
+
+<h2>create subset based on the date boundaries</h2>
+
+<p>We will only be using data from the dates 2007-02-01 and 2007-02-02. One alternative is to read the data from just those dates rather than reading in the entire dataset and subsetting to those dates.We will convert the Date and Time variables to Date/Time classes in R using the strptime() and as.Date() functions.</p>
+
+<p>Subset based on the provided date boundary variables</p>
+
+<pre><code class="r">
+selectedPeriod &lt;- dat[with(dat, !is.na(TimeStamp) &amp; TimeStamp &gt; strptime(&quot;01/02/2007 00:00:00&quot;, 
+    &quot;%d/%m/%Y %H:%M:%S&quot;) &amp; TimeStamp &lt; strptime(&quot;03/02/2007 00:00:00&quot;, &quot;%d/%m/%Y %H:%M:%S&quot;)), 
+    ]
+str(selectedPeriod)
+</code></pre>
+
+<pre><code>## &#39;data.frame&#39;:    2879 obs. of  10 variables:
+##  $ Date                 : chr  &quot;1/2/2007&quot; &quot;1/2/2007&quot; &quot;1/2/2007&quot; &quot;1/2/2007&quot; ...
+##  $ Time                 : chr  &quot;00:01:00&quot; &quot;00:02:00&quot; &quot;00:03:00&quot; &quot;00:04:00&quot; ...
+##  $ Global_active_power  : num  0.326 0.324 0.324 0.322 0.32 0.32 0.32 0.32 0.236 0.226 ...
+##  $ Global_reactive_power: num  0.13 0.132 0.134 0.13 0.126 0.126 0.126 0.128 0 0 ...
+##  $ Voltage              : num  243 244 244 243 242 ...
+##  $ Global_intensity     : num  1.4 1.4 1.4 1.4 1.4 1.4 1.4 1.4 1 1 ...
+##  $ Sub_metering_1       : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Sub_metering_2       : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Sub_metering_3       : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ TimeStamp            : POSIXlt, format: &quot;2007-02-01 00:01:00&quot; &quot;2007-02-01 00:02:00&quot; ...
+</code></pre>
+
+<h2>clean up the date and time columns and save as a csv file.</h2>
+
+<pre><code class="r">
+## remove the individual date and time columns
+selectedPeriod$Date &lt;- NULL
+selectedPeriod$Time &lt;- NULL
+write.csv(selectedPeriod, &quot;~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/tidy.csv&quot;, 
+    row.names = FALSE)
+</code></pre>
+
+<h2>Create plot1.R histogram to visualize the data</h2>
+
+<p>The script file reads in the data from the previously created <code>tidy.csv</code> data set and builds a histogram. The actual scriptfile has the <code>dev</code> lines enabled </p>
+
+<pre><code class="r">
+## Plot1.R
+period &lt;- read.csv(&quot;~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/tidy.csv&quot;)
+str(period)
+</code></pre>
+
+<pre><code>## &#39;data.frame&#39;:    2879 obs. of  8 variables:
+##  $ Global_active_power  : num  0.326 0.324 0.324 0.322 0.32 0.32 0.32 0.32 0.236 0.226 ...
+##  $ Global_reactive_power: num  0.13 0.132 0.134 0.13 0.126 0.126 0.126 0.128 0 0 ...
+##  $ Voltage              : num  243 244 244 243 242 ...
+##  $ Global_intensity     : num  1.4 1.4 1.4 1.4 1.4 1.4 1.4 1.4 1 1 ...
+##  $ Sub_metering_1       : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Sub_metering_2       : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Sub_metering_3       : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ TimeStamp            : Factor w/ 2879 levels &quot;2007-02-01 00:01:00&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
+</code></pre>
+
+<pre><code class="r">## first on the screen
+hist(period$Global_active_power, main = &quot;Global active power&quot;, col = &quot;red&quot;, 
+    xlab = &quot;Global Active Power (kilowatts)&quot;)
+</code></pre>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAbAAAAGwCAMAAAD/kMAYAAAApVBMVEX9/v0AAAAAADkAAGUAOTkAOWUAOY8AZrU5AAA5ADk5AGU5OQA5OWU5OY85ZmU5ZrU5j485j9plAABlADllAGVlOQBlOY9lZjllZmVlj49ltbVltf2POQCPOTmPOWWPZgCPj2WPtY+P27WP29qP2/21ZgC1Zjm1tWW124+1/rW1/tq1/v3ajzna24/a/rXa/tra/v39tWX924/9/rX9/tr9/v3/AACSc6vKAAAAN3RSTlP//////////////////////////////////////////////////////////////////////wD/rn+PdAAAAAlwSFlzAAALEgAACxIB0t1+/AAADEdJREFUeJztnQ1727YVRku7sxyv3iY1abtJXtNObJOY7Ux97P//tOGLlGRTEmVCAl7nnCeNLRKCVBxe4IoBoG/WIMU3qd8AnAbCxECYGAgTA2FiIEwMhImBMDEQJgbCxECYGAgTA2FiIEwMhImBMDEQJgbCxECYGAgTA2FiIEwMhImBMDEQJoaAsNWsKIqr+Xq9nFw/bh3demDZObtDOT1wUo38hS1uC8f0tcJK89S3Q/bCTHyN3N83T15JZeSNnbDfC3Nwva59ALbCwmMXmdePLj5H9mRpK1q7vyt3AYT6bT3uqb5mdyVU5pflxNQeSq5mVz+6SpOTvbDFrZWyXtw9eiWlC7eR7ygLp7H56YU1j32B6y+tsNrqXU5Ms/s6xq7+tp625soYslprU6Ip6Uq5N5Ka7IXVLi4cttUXty6YruamCce++cOZ7S7Rl3R6p+4/e8BEyXxtrblroOlSQz3FtK15cTteTn66fqzsr6Gkj/Mc0BBmezmvxPszQeAb3I1PNqa2hfnHdQihVpjr5+yD2g+K3rWvx5xqa15ORot3v7ybl7aOUNLJzoLshbmL/JAwn5RshDWP29BshZlB6U/784iwdXn9+/Xnyb8mozXCTselG75du7tEGze2+2uENY9dl9gElT9ZXn20YReGxbb+Z13iur768eap/NvtdFMSYf1p0vrRnqTDR8FGWPM4JB3uGSN/0lTl2r1s8ox1V9Jh9Y2Nah/BTQaDsP6UvuHXe9J6c3rshp4whoXH7hfbzEaT7wpDTh9qbGOnqaep2TqcuuxkUxJh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" alt="plot of chunk unnamed-chunk-6"/> </p>
+
+<pre><code class="r">## next save the result to a png file
+## dev.copy(png,filename=&#39;~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/plot1.png&#39;,
+## width = 480, height = 480) dev.off()
+</code></pre>
+
+<h2>Create plot2.R graph</h2>
+
+<p>The script file reads in the data from the previously created <code>tidy.csv</code> data set and builds a histogram. The actual scriptfile has the <code>dev</code> lines enabled </p>
+
+<pre><code class="r">
+period &lt;- read.csv(&quot;~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/tidy.csv&quot;, 
+    stringsAsFactors = FALSE)
+## Check the data using str, head and tail
+str(period)
+</code></pre>
+
+<pre><code>## &#39;data.frame&#39;:    2879 obs. of  8 variables:
+##  $ Global_active_power  : num  0.326 0.324 0.324 0.322 0.32 0.32 0.32 0.32 0.236 0.226 ...
+##  $ Global_reactive_power: num  0.13 0.132 0.134 0.13 0.126 0.126 0.126 0.128 0 0 ...
+##  $ Voltage              : num  243 244 244 243 242 ...
+##  $ Global_intensity     : num  1.4 1.4 1.4 1.4 1.4 1.4 1.4 1.4 1 1 ...
+##  $ Sub_metering_1       : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Sub_metering_2       : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Sub_metering_3       : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ TimeStamp            : chr  &quot;2007-02-01 00:01:00&quot; &quot;2007-02-01 00:02:00&quot; &quot;2007-02-01 00:03:00&quot; &quot;2007-02-01 00:04:00&quot; ...
+</code></pre>
+
+<pre><code class="r">head(period)
+</code></pre>
+
+<pre><code>##   Global_active_power Global_reactive_power Voltage Global_intensity
+## 1               0.326                 0.130   243.3              1.4
+## 2               0.324                 0.132   243.5              1.4
+## 3               0.324                 0.134   243.9              1.4
+## 4               0.322                 0.130   243.2              1.4
+## 5               0.320                 0.126   242.3              1.4
+## 6               0.320                 0.126   242.5              1.4
+##   Sub_metering_1 Sub_metering_2 Sub_metering_3           TimeStamp
+## 1              0              0              0 2007-02-01 00:01:00
+## 2              0              0              0 2007-02-01 00:02:00
+## 3              0              0              0 2007-02-01 00:03:00
+## 4              0              0              0 2007-02-01 00:04:00
+## 5              0              0              0 2007-02-01 00:05:00
+## 6              0              0              0 2007-02-01 00:06:00
+</code></pre>
+
+<pre><code class="r">tail(period)
+</code></pre>
+
+<pre><code>##      Global_active_power Global_reactive_power Voltage Global_intensity
+## 2874               3.696                 0.226   240.7             15.2
+## 2875               3.696                 0.226   240.9             15.2
+## 2876               3.698                 0.226   241.0             15.2
+## 2877               3.684                 0.224   240.5             15.2
+## 2878               3.658                 0.220   239.6             15.2
+## 2879               3.680                 0.224   240.4             15.2
+##      Sub_metering_1 Sub_metering_2 Sub_metering_3           TimeStamp
+## 2874              0              1             17 2007-02-02 23:54:00
+## 2875              0              1             18 2007-02-02 23:55:00
+## 2876              0              2             18 2007-02-02 23:56:00
+## 2877              0              1             18 2007-02-02 23:57:00
+## 2878              0              1             17 2007-02-02 23:58:00
+## 2879              0              2             18 2007-02-02 23:59:00
+</code></pre>
+
+<pre><code class="r">## read the date / time information
+period$TimeStamp &lt;- strptime(period$TimeStamp, &quot;%Y-%m-%d %H:%M:%S&quot;)
+## first create a plot on the screen
+plot(period$TimeStamp, period$Global_active_power, type = &quot;n&quot;, xlab = format(period$TimeStamp, 
+    &quot;%a&quot;), ylab = &quot;Global Active Power (kilowatts)&quot;)
+lines(period$TimeStamp, period$Global_active_power)
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-7"/> </p>
+
+<pre><code class="r">## next save the result to a png file
+## dev.copy(png,filename=&#39;~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/figure/plot2.png&#39;,
+## width = 480, height = 480) dev.off()
+
+</code></pre>
+
+</body>
+
+</html>
+

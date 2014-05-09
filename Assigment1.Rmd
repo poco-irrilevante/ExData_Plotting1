@@ -1,0 +1,117 @@
+# Peer assignment 1; Exploratory Data Analysis
+--- 
+
+## Abstract
+This script file will read the csv file and tidy it, and saves the subset based on the provided period.
+
+## Data description
+ * Dataset: Electric power consumption [20Mb]
+ * Description: Measurements of electric power consumption in one household with a one-minute sampling rate over a period of almost 4 years. Different electrical quantities and some sub-metering values are available.
+
+The following descriptions of the 9 variables in the dataset are taken from the UCI web site:
+  1. Date: Date in format dd/mm/yyyy 
+  2. Time: time in format hh:mm:ss 
+  3. Global_active_power: household global minute-averaged active power (in kilowatt) 
+  4. Global_reactive_power: household global minute-averaged reactive power (in kilowatt) 
+  5. Voltage: minute-averaged voltage (in volt) 
+  6. Global_intensity: household global minute-averaged current intensity (in ampere) 
+  7. Sub_metering_1: energy sub-metering No. 1 (in watt-hour of active energy). It corresponds to the kitchen, containing mainly a dishwasher, an oven and a microwave (hot plates are not electric but gas powered). 
+  8. Sub_metering_2: energy sub-metering No. 2 (in watt-hour of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator and a light. 
+  9. Sub_metering_3: energy sub-metering No. 3 (in watt-hour of active energy). It corresponds to an electric water-heater and an air-conditioner.
+
+## Loading required libraries
+ 
+I decided to use the `data.table` library to read the file. The knitr library is used for creating markdown documents. 
+
+``` {r}
+
+## install.packages("data.table")       ## optional for read.table
+## install.packages("knitr")            ## optional for markdown
+library(data.table) ## for read.table
+library(knitr)      ## for markdown
+
+```
+
+## Read the text file 
+I have set the data directory differently than the script folder, to prevent the data being synced with the github data we put the folder in a different location
+
+As mentioned in the supporting documentation the dataset has 2,075,259 rows of 9 columns. 
+``` {r}
+
+dat <- read.table(file="~/Courses/R-ExploratoryDataAnalysis/Data/power_consumption/household_power_consumption.txt",header=TRUE,sep=";" , na.strings="?", stringsAsFactors=FALSE )
+str(dat)
+
+```
+
+The next step is to combine the date and time columns to a single datetime columns and remove the old columns
+
+``` {r}
+
+dat$TimeStamp <- strptime(paste(dat$Date, dat$Time, sep=" "),"%d/%m/%Y %H:%M:%S")
+## Check the structure
+str(dat)
+
+
+```
+
+
+## create subset based on the date boundaries
+We will only be using data from the dates 2007-02-01 and 2007-02-02. One alternative is to read the data from just those dates rather than reading in the entire dataset and subsetting to those dates.We will convert the Date and Time variables to Date/Time classes in R using the strptime() and as.Date() functions.
+
+Subset based on the provided date boundary variables
+
+``` {r}
+
+selectedPeriod <- dat[with(dat, !is.na(TimeStamp) &
+                                TimeStamp > strptime("01/02/2007 00:00:00","%d/%m/%Y %H:%M:%S") & 
+                                TimeStamp < strptime("03/02/2007 00:00:00","%d/%m/%Y %H:%M:%S")),]
+str(selectedPeriod)
+
+```
+
+## clean up the date and time columns and save as a csv file.
+``` {r}
+
+## remove the individual date and time columns
+selectedPeriod$Date <- NULL
+selectedPeriod$Time <- NULL
+write.csv(selectedPeriod, "~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/tidy.csv", row.names=FALSE)
+
+```
+
+## Create plot1.R histogram to visualize the data
+The script file reads in the data from the previously created `tidy.csv` data set and builds a histogram. The actual scriptfile has the `dev` lines enabled 
+``` {r fig.width=6, fig.height=6}
+
+## Plot1.R
+period <- read.csv("~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/tidy.csv")
+str(period)
+## first on the screen
+hist(period$Global_active_power,main="Global active power", col="red", xlab="Global Active Power (kilowatts)")
+## next save the result to a png file
+## dev.copy(png,filename="~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/plot1.png", width = 480, height = 480)
+## dev.off()
+
+```
+
+## Create plot2.R graph 
+The script file reads in the data from the previously created `tidy.csv` data set and builds a histogram. The actual scriptfile has the `dev` lines enabled 
+
+``` {r fig.width=6, fig.height=6}
+
+period <- read.csv("~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/tidy.csv",stringsAsFactors=FALSE)
+## Check the data using str, head and tail
+str(period)
+head(period)
+tail(period)
+## read the date / time information
+period$TimeStamp <- strptime(period$TimeStamp, "%Y-%m-%d %H:%M:%S")
+## first create a plot on the screen
+plot(period$TimeStamp,period$Global_active_power,  type="n", xlab=format(period$TimeStamp,"%a"), ylab="Global Active Power (kilowatts)")
+lines(period$TimeStamp,period$Global_active_power)
+## next save the result to a png file
+## dev.copy(png,filename="~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/figure/plot2.png", width = 480, height = 480)
+## dev.off()
+
+
+``` 
