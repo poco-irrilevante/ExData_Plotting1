@@ -1,8 +1,6 @@
 ## Plot1.R
 library(ggplot2) ## for ggplot
 library(scales) ## for date scales
-library(reshape2) # for melt
-library(plyr) # for colwise
 
 plot1 <- function(sourcePath) {
   period <- read.csv(paste(sourcePath,"/tidy.csv",sep=""),stringsAsFactors=FALSE)

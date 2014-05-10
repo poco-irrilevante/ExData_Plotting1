@@ -131,52 +131,122 @@ write.csv(selectedPeriod, "~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plott
 
 
 ## Create plot1.R histogram to visualize the data
-The script file reads in the data from the previously created `tidy.csv` data set and builds a histogram. The actual scriptfile has the `dev` lines enabled 
+The script file reads in the data from the previously created `tidy.csv` data set and builds a histogram. 
+
 
 ```r
 
 ## Plot1.R
-period <- read.csv("~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/tidy.csv")
-str(period)
+library(ggplot2)  ## for ggplot
+library(scales)  ## for date scales
+library(reshape2)  # for melt
+library(plyr)  # for colwise
+
+plot1 <- function(sourcePath) {
+    period <- read.csv(paste(sourcePath, "/tidy.csv", sep = ""), stringsAsFactors = FALSE)
+    graph <- ggplot(period, aes(x = Global_active_power)) + geom_histogram(aes(fill = "red", 
+        colour = "black"), binwidth = 0.5) + xlab("Global Active Power (kilowatts)") + 
+        ylab("Frequency") + labs(title = "Global Active Power") + theme(legend.position = "none")
+    ## next save the result to a png file
+    ggsave(file = paste(sourcePath, "/figure/plot1.png", sep = ""), plot = graph, 
+        dpi = 480)
+    return(graph)
+}
+
+plot1("~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1")
 ```
 
 ```
-## 'data.frame':	2879 obs. of  8 variables:
-##  $ Global_active_power  : num  0.326 0.324 0.324 0.322 0.32 0.32 0.32 0.32 0.236 0.226 ...
-##  $ Global_reactive_power: num  0.13 0.132 0.134 0.13 0.126 0.126 0.126 0.128 0 0 ...
-##  $ Voltage              : num  243 244 244 243 242 ...
-##  $ Global_intensity     : num  1.4 1.4 1.4 1.4 1.4 1.4 1.4 1.4 1 1 ...
-##  $ Sub_metering_1       : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ Sub_metering_2       : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ Sub_metering_3       : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ TimeStamp            : Factor w/ 2879 levels "2007-02-01 00:01:00",..: 1 2 3 4 5 6 7 8 9 10 ...
-```
-
-```r
-## first on the screen
-hist(period$Global_active_power, main = "Global active power", col = "red", 
-    xlab = "Global Active Power (kilowatts)")
+## Saving 6 x 6 in image
 ```
 
 ![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
 
 ```r
-## next save the result to a png file
-## dev.copy(png,filename='~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/plot1.png',
-## width = 480, height = 480) dev.off()
+
 ```
 
 
 ## Create plot2.R graph 
-The script file reads in the data from the previously created `tidy.csv` data set and builds a histogram. The actual scriptfile has the `dev` lines enabled 
+The script file reads in the data from the previously created `tidy.csv` data set and builds the plot. 
 
 
 ```r
 
-period <- read.csv("~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/tidy.csv", 
-    stringsAsFactors = FALSE)
-## Check the data using str, head and tail
-str(period)
+## Plot2.R
+## Load required libraries
+library(ggplot2) ## for ggplot
+library(scales) ## for date scales
+
+plot2 <- function(sourcePath) {
+  period <- read.csv(paste(sourcePath,"/tidy.csv",sep=""),stringsAsFactors=FALSE)
+  ## read the date / time information
+  period$TimeStamp <- strptime(period$TimeStamp, "%Y-%m-%d %H:%M:%S")
+  graph <- ggplot(period, aes(x=TimeStamp, y=Global_active_power)) +
+    scale_x_datetime(breaks= "1 day", labels = date_format("%a")) +  ## per day with short weekday labels
+    geom_line() + 
+    xlab("") + ## remove x axis label
+    ylab("Global Active Power (kilowatts)") 
+  ## next save the result to a png file and return the plot
+  ggsave(file=paste(sourcePath,"/figure/plot2.png", sep=""), plot=graph, dpi=480)
+  return(graph)
+}
+
+plot2("~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1")
+```
+
+```
+## Saving 6 x 6 in image
+```
+
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+
+```r
+
+```
+
+
+## Create plot3.R graph 
+The script file reads in the data from the previously created `tidy.csv` data set and builds the plot. 
+
+
+```r
+
+## Plot3.R
+## Load required libraries
+library(ggplot2) ## for ggplot
+library(scales) ## for date scales
+library(reshape2) # for melt
+library(plyr) # for colwise
+
+plot3 <- function(sourcePath) {
+  ## Load the previously created tidy dataset
+  period <- read.csv(paste(sourcePath,"/tidy.csv",sep=""),stringsAsFactors=FALSE)
+  ## show the structure of the data
+  str(period)
+  ## melt the data
+  period <- period[,5:8] ## only last four variables are required.
+  period <- melt(period, names(period)[4], names(period)[1:3])
+  
+  ## convert the date/time string information
+  period$TimeStamp <- strptime(period$TimeStamp, "%Y-%m-%d %H:%M:%S")
+  
+  ## first create a plot on the screen using ggplot
+  graph <- ggplot(period, aes(x=TimeStamp, y=value,colour=variable)) +
+    scale_x_datetime(breaks= "1 day", labels = date_format("%a")) +  ## per day with short weekday labels
+    geom_line() + 
+    xlab("") + ## remove x axis label
+    ylab("Energy Sub metering") + ## set y axis label
+    ## theme_classic() + ## basic theme to mimic plot
+    theme(legend.position=c(.8,.8)) + ## legend top right
+    theme(legend.title=element_blank())   ## remove legend title
+    
+  ## next save the result to a png file
+  ggsave(file=paste(sourcePath,"/figure/plot3.png", sep=""), plot=graph, dpi=480)
+  return(graph)
+}
+
+plot3("~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1")
 ```
 
 ```
@@ -191,63 +261,102 @@ str(period)
 ##  $ TimeStamp            : chr  "2007-02-01 00:01:00" "2007-02-01 00:02:00" "2007-02-01 00:03:00" "2007-02-01 00:04:00" ...
 ```
 
-```r
-head(period)
+```
+## Saving 6 x 6 in image
 ```
 
-```
-##   Global_active_power Global_reactive_power Voltage Global_intensity
-## 1               0.326                 0.130   243.3              1.4
-## 2               0.324                 0.132   243.5              1.4
-## 3               0.324                 0.134   243.9              1.4
-## 4               0.322                 0.130   243.2              1.4
-## 5               0.320                 0.126   242.3              1.4
-## 6               0.320                 0.126   242.5              1.4
-##   Sub_metering_1 Sub_metering_2 Sub_metering_3           TimeStamp
-## 1              0              0              0 2007-02-01 00:01:00
-## 2              0              0              0 2007-02-01 00:02:00
-## 3              0              0              0 2007-02-01 00:03:00
-## 4              0              0              0 2007-02-01 00:04:00
-## 5              0              0              0 2007-02-01 00:05:00
-## 6              0              0              0 2007-02-01 00:06:00
-```
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
 
 ```r
-tail(period)
+
+```
+
+
+## Create plot5.R graph 
+The script file reads in the data from the previously created `tidy.csv` data set and builds the plot shown in the right lower corner of the assignment. This plot is not saved
+
+
+```r
+## Plot5.R
+## Load required libraries
+library(ggplot2) ## for ggplot
+library(scales) ## for date scales
+
+plot5 <- function(sourcePath) {
+  period <- read.csv(paste(sourcePath,"/tidy.csv",sep=""),stringsAsFactors=FALSE)
+  ## read the date / time information
+  period$TimeStamp <- strptime(period$TimeStamp, "%Y-%m-%d %H:%M:%S")
+  graph <- ggplot(period, aes(x=TimeStamp, y=Global_reactive_power)) +
+    scale_x_datetime(breaks= "1 day", labels = date_format("%a")) +  ## per day with short weekday labels
+    geom_line() + 
+    xlab("") + ## remove x axis label
+    ylab("Global Re-Active Power (kilowatts)") 
+  ## next save the result to a png file and return the plot
+  ## ggsave(file=paste(sourcePath,"/figure/plot5.png", sep=""), plot=graph, dpi=480)
+  return(graph)
+}
+
+plot5("~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1")
+```
+
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+
+
+## Consolidate the plots into a single composition by creating plot4.R
+
+```r
+library(ggplot2)  ## for ggplot
+library(gridExtra)
 ```
 
 ```
-##      Global_active_power Global_reactive_power Voltage Global_intensity
-## 2874               3.696                 0.226   240.7             15.2
-## 2875               3.696                 0.226   240.9             15.2
-## 2876               3.698                 0.226   241.0             15.2
-## 2877               3.684                 0.224   240.5             15.2
-## 2878               3.658                 0.220   239.6             15.2
-## 2879               3.680                 0.224   240.4             15.2
-##      Sub_metering_1 Sub_metering_2 Sub_metering_3           TimeStamp
-## 2874              0              1             17 2007-02-02 23:54:00
-## 2875              0              1             18 2007-02-02 23:55:00
-## 2876              0              2             18 2007-02-02 23:56:00
-## 2877              0              1             18 2007-02-02 23:57:00
-## 2878              0              1             17 2007-02-02 23:58:00
-## 2879              0              2             18 2007-02-02 23:59:00
+## Loading required package: grid
 ```
 
 ```r
-## read the date / time information
-period$TimeStamp <- strptime(period$TimeStamp, "%Y-%m-%d %H:%M:%S")
-## first create a plot on the screen
-plot(period$TimeStamp, period$Global_active_power, type = "n", xlab = format(period$TimeStamp, 
-    "%a"), ylab = "Global Active Power (kilowatts)")
-lines(period$TimeStamp, period$Global_active_power)
+
+plot4 <- function(sourcePath) {
+    ## Load the plot script files
+    source(paste(sourcePath, "/plot1.R", sep = ""))
+    source(paste(sourcePath, "/plot2.R", sep = ""))
+    source(paste(sourcePath, "/plot3.R", sep = ""))
+    source(paste(sourcePath, "/plot5.R", sep = ""))
+    plot1 <- plot1(sourcePath)
+    plot2 <- plot2(sourcePath)
+    plot3 <- plot3(sourcePath)
+    plot5 <- plot5(sourcePath)
+    ## arrange the plots into a single composition
+    graph <- arrangeGrob(plot1, plot2, plot3, plot5, nrow = 2, ncol = 2)
+    ## Save the plot and return the plot
+    ggsave(file = paste(sourcePath, "/figure/plot4.png", sep = ""), plot = graph, 
+        dpi = 480)
+    return(graph)
+}
+
+plot4("~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1")
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
-
-```r
-## next save the result to a png file
-## dev.copy(png,filename='~/Courses/R-ExploratoryDataAnalysis/Data/ExData_Plotting1/figure/plot2.png',
-## width = 480, height = 480) dev.off()
+```
+## Saving 6 x 6 in image
+## Saving 6 x 6 in image
+```
 
 ```
+## 'data.frame':	2879 obs. of  8 variables:
+##  $ Global_active_power  : num  0.326 0.324 0.324 0.322 0.32 0.32 0.32 0.32 0.236 0.226 ...
+##  $ Global_reactive_power: num  0.13 0.132 0.134 0.13 0.126 0.126 0.126 0.128 0 0 ...
+##  $ Voltage              : num  243 244 244 243 242 ...
+##  $ Global_intensity     : num  1.4 1.4 1.4 1.4 1.4 1.4 1.4 1.4 1 1 ...
+##  $ Sub_metering_1       : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Sub_metering_2       : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Sub_metering_3       : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ TimeStamp            : chr  "2007-02-01 00:01:00" "2007-02-01 00:02:00" "2007-02-01 00:03:00" "2007-02-01 00:04:00" ...
+```
+
+```
+## Saving 6 x 6 in image
+## Saving 6 x 6 in image
+```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
 
